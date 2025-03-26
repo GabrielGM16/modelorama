@@ -1,0 +1,16 @@
+<resources>
+    <string name="app_name">Modelorama</string>
+    <string name="title_home">Inicio</string>
+    <string name="title_carrito">Carrito</string>
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+    <string name="nav_header_title">Modelorama</string>
+    <string name="nav_header_subtitle">modelorama@example.com</string>
+    <string name="nav_header_desc">Navigation header</string>
+    <string name="action_settings">Configuración</string>
+
+    <string name="menu_home">Inicio</string>
+    <string name="menu_carrito">Carrito</string>
+    <string name="menu_promociones">Promociones</string>
+    <string name="menu_ubicaciones">Ubicaciones</string>
+</resources>

@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/mobile_navigation"
+    app:startDestination="@+id/navigation_home">
+
+    <fragment
+        android:id="@+id/navigation_home"
+        android:name="com.example.modelorama.ui.home.HomeFragment"
+        android:label="@string/menu_home"
+        tools:layout="@layout/fragment_home" />
+
+    <fragment
+        android:id="@+id/navigation_carrito"
+        android:name="com.example.modelorama.ui.carrito.CarritoFragment"
+        android:label="@string/menu_carrito"
+        tools:layout="@layout/fragment_carrito" />
+
+    <fragment
+        android:id="@+id/navigation_promociones"
+        android:name="com.example.modelorama.ui.promociones.PromocionesFragment"
+        android:label="@string/menu_promociones"
+        tools:layout="@layout/fragment_promociones" />
+
+    <fragment
+        android:id="@+id/navigation_ubicaciones"
+        android:name="com.example.modelorama.ui.ubicaciones.UbicacionesFragment"
+        android:label="@string/menu_ubicaciones"
+        tools:layout="@layout/fragment_ubicaciones" />
+</navigation>
