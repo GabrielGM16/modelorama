@@ -90,6 +90,8 @@ dependencies {
     // Coroutines for asynchronous programming
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3")
+    // Add this line for Firebase coroutine support
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-play-services:1.7.3")
     
     // Dagger Hilt for dependency injection (if you're using @Inject)
     // Add Hilt Kapt processor for annotation processing (missing in your config)
