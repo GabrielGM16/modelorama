@@ -104,9 +104,14 @@ class LoginActivity : AppCompatActivity() {
         showLoading(true)
         auth.signInWithEmailAndPassword(email, password)
             .addOnCompleteListener(this) { task ->
-                showLoading(false)
+                showLoading(false) // Make sure loading is hidden
                 if (task.isSuccessful) {
-                    navigateToMain()
+                    try {
+                        navigateToMain()
+                    } catch (e: Exception) {
+                        Log.e("LoginActivity", "Error navigating to main: ${e.message}", e)
+                        Toast.makeText(this, "Error al navegar: ${e.message}", Toast.LENGTH_LONG).show()
+                    }
                 } else {
                     showError("Error de inicio de sesión: ${task.exception?.message}")
                 }
@@ -114,8 +119,15 @@ class LoginActivity : AppCompatActivity() {
     }
 
     private fun navigateToMain() {
-        startActivity(Intent(this, MainActivity::class.java))
-        finish()
+        try {
+            val intent = Intent(this, MainActivity::class.java)
+            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+            startActivity(intent)
+            finish()
+        } catch (e: Exception) {
+            Log.e("LoginActivity", "Error navigating to main: ${e.message}", e)
+            Toast.makeText(this, "Error al navegar: ${e.message}", Toast.LENGTH_LONG).show()
+        }
     }
 
     private fun showLoading(isLoading: Boolean) {

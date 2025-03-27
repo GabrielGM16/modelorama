@@ -2,6 +2,7 @@ package com.example.modelorama.ui.auth
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -75,24 +76,36 @@ class RegisterActivity : AppCompatActivity() {
                     user?.uid?.let { uid ->
                         db.collection("usuarios").document(uid).set(userData)
                             .addOnSuccessListener {
-                                showLoading(false)
+                                showLoading(false) // Make sure to hide loading here
+                                Toast.makeText(this, "Registro exitoso", Toast.LENGTH_SHORT).show()
                                 navigateToMain()
                             }
                             .addOnFailureListener { e ->
-                                showLoading(false)
+                                showLoading(false) // Make sure to hide loading here
                                 showError("Error al guardar datos: ${e.message}")
                             }
+                    } ?: run {
+                        // Handle case where user is null
+                        showLoading(false)
+                        showError("Error: No se pudo obtener el usuario")
                     }
                 } else {
-                    showLoading(false)
+                    showLoading(false) // Make sure to hide loading here
                     showError("Error de registro: ${task.exception?.message}")
                 }
             }
     }
 
     private fun navigateToMain() {
-        startActivity(Intent(this, MainActivity::class.java))
-        finishAffinity()
+        try {
+            val intent = Intent(this, MainActivity::class.java)
+            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+            startActivity(intent)
+            finish()
+        } catch (e: Exception) {
+            Log.e("RegisterActivity", "Error navigating to main: ${e.message}", e)
+            Toast.makeText(this, "Error al navegar: ${e.message}", Toast.LENGTH_LONG).show()
+        }
     }
 
     private fun showLoading(isLoading: Boolean) {
