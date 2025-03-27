@@ -1,6 +1,6 @@
 package com.example.modelorama.model
 
-import com.example.modelorama.ui.home.Producto
+import com.example.modelorama.model.Producto
 
 data class CarritoItem(
     val producto: Producto,

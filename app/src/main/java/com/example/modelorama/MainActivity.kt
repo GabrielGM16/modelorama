@@ -10,7 +10,7 @@ import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
 import com.example.modelorama.databinding.ActivityMainBinding
-import com.example.modelorama.ui.home.Producto
+import com.example.modelorama.model.Producto  // Updated import
 import com.example.modelorama.ui.auth.LoginActivity
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore

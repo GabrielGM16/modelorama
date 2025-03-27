@@ -2,6 +2,8 @@ plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
     id("com.google.gms.google-services")
+    id("com.google.firebase.crashlytics")
+    id("kotlin-kapt")  // Uncommented this line
 }
 
 android {
@@ -55,19 +57,26 @@ dependencies {
     androidTestImplementation(libs.androidx.espresso.core)
     
     // Add Firebase dependencies
-    implementation(platform("com.google.firebase:firebase-bom:32.3.1"))
+    // Update Firebase BOM to a newer version
+    implementation(platform("com.google.firebase:firebase-bom:32.7.0"))
     implementation("com.google.firebase:firebase-analytics-ktx")
     implementation("com.google.firebase:firebase-firestore-ktx")
     implementation("com.google.firebase:firebase-auth-ktx")
     implementation("com.google.firebase:firebase-storage-ktx")
-
-    // Glide for image loading
+    
+    // Add Firebase Crashlytics to track errors
+    implementation("com.google.firebase:firebase-crashlytics-ktx")
+    
+    // Glide for image loading - changed annotationProcessor to kapt
     implementation("com.github.bumptech.glide:glide:4.15.1")
-    annotationProcessor("com.github.bumptech.glide:compiler:4.15.1")
+    kapt("com.github.bumptech.glide:compiler:4.15.1")  // Changed from annotationProcessor to kapt
     
     // ZXing for QR code generation
     implementation("com.google.zxing:core:3.5.1")
     implementation("com.journeyapps:zxing-android-embedded:4.3.0")
+    
+    // Add QRGen for easier QR code generation
+    implementation("com.github.kenglxn.QRGen:android:2.6.0")
     
     // Gson for JSON serialization
     implementation("com.google.code.gson:gson:2.10.1")
@@ -83,6 +92,15 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3")
     
     // Dagger Hilt for dependency injection (if you're using @Inject)
+    // Add Hilt Kapt processor for annotation processing (missing in your config)
     implementation("com.google.dagger:hilt-android:2.48")
-    annotationProcessor("com.google.dagger:hilt-compiler:2.48")
+    // Replace annotationProcessor with kapt for Kotlin
+    kapt("com.google.dagger:hilt-compiler:2.48")
+    // Remove this line
+    // annotationProcessor("com.google.dagger:hilt-compiler:2.48")
 }
+
+// Add this at the end of the file for QRGen repository
+// repositories {
+//     maven { url = uri("https://jitpack.io") }
+// }

@@ -1,7 +1,7 @@
 package com.example.modelorama.data
 
 import android.util.Log
-import com.example.modelorama.ui.home.Producto
+import com.example.modelorama.model.Producto
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.Dispatchers

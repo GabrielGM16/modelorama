@@ -1,89 +1,107 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_margin="8dp"
     app:cardCornerRadius="8dp"
     app:cardElevation="4dp">
 
-    <LinearLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:padding="16dp">
+        android:padding="8dp">
+
+        <ImageView
+            android:id="@+id/imageViewProduct"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:scaleType="centerCrop"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:src="@drawable/ic_launcher_foreground" />
 
         <TextView
-            android:id="@+id/textViewNombreProductoCarrito"
-            android:layout_width="match_parent"
+            android:id="@+id/textViewProductName"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:textSize="18sp"
-            android:textStyle="bold" />
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="8dp"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toStartOf="@+id/buttonDelete"
+            app:layout_constraintStart_toEndOf="@+id/imageViewProduct"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="Nombre del Producto" />
 
         <TextView
-            android:id="@+id/textViewPrecioProductoCarrito"
-            android:layout_width="match_parent"
+            android:id="@+id/textViewProductPrice"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textColor="#4CAF50"
-            android:textSize="16sp" />
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="4dp"
+            android:textColor="@android:color/holo_green_dark"
+            app:layout_constraintStart_toEndOf="@+id/imageViewProduct"
+            app:layout_constraintTop_toBottomOf="@+id/textViewProductName"
+            tools:text="$99.99" />
 
         <LinearLayout
-            android:layout_width="match_parent"
+            android:id="@+id/quantityLayout"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
+            android:layout_marginStart="8dp"
             android:layout_marginTop="8dp"
-            android:gravity="center_vertical">
+            android:orientation="horizontal"
+            app:layout_constraintStart_toEndOf="@+id/imageViewProduct"
+            app:layout_constraintTop_toBottomOf="@+id/textViewProductPrice">
 
             <Button
-                android:id="@+id/buttonDecrementar"
+                android:id="@+id/buttonDecrement"
                 android:layout_width="40dp"
                 android:layout_height="40dp"
                 android:text="-"
-                android:textSize="16sp"
-                android:padding="0dp"
-                style="@style/Widget.MaterialComponents.Button.OutlinedButton" />
+                android:textSize="16sp" />
 
             <TextView
-                android:id="@+id/textViewCantidad"
-                android:layout_width="wrap_content"
+                android:id="@+id/textViewQuantity"
+                android:layout_width="40dp"
                 android:layout_height="wrap_content"
-                android:text="1"
-                android:textSize="18sp"
+                android:gravity="center"
+                android:textSize="16sp"
                 android:textStyle="bold"
-                android:layout_marginStart="8dp"
-                android:layout_marginEnd="8dp" />
+                tools:text="1" />
 
             <Button
-                android:id="@+id/buttonIncrementar"
+                android:id="@+id/buttonIncrement"
                 android:layout_width="40dp"
                 android:layout_height="40dp"
                 android:text="+"
-                android:textSize="16sp"
-                android:padding="0dp"
-                style="@style/Widget.MaterialComponents.Button.OutlinedButton" />
-
-            <Space
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1" />
-
-            <TextView
-                android:id="@+id/textViewSubtotal"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="$0.00"
-                android:textSize="18sp"
-                android:textStyle="bold" />
+                android:textSize="16sp" />
         </LinearLayout>
 
-        <Button
-            android:id="@+id/buttonEliminar"
+        <TextView
+            android:id="@+id/textViewSubtotal"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Eliminar"
-            android:layout_gravity="end"
-            android:layout_marginTop="8dp"
-            style="@style/Widget.MaterialComponents.Button.TextButton"
-            android:textColor="#F44336" />
-    </LinearLayout>
+            android:layout_marginEnd="8dp"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toBottomOf="@+id/quantityLayout"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/quantityLayout"
+            tools:text="$99.99" />
+
+        <ImageButton
+            android:id="@+id/buttonDelete"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="Eliminar producto"
+            android:padding="8dp"
+            android:src="@android:drawable/ic_menu_delete"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.cardview.widget.CardView>
