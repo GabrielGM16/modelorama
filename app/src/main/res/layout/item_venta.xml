@@ -13,37 +13,27 @@
         android:orientation="vertical"
         android:padding="16dp">
 
-        <ImageView
-            android:id="@+id/imageViewProducto"
-            android:layout_width="match_parent"
-            android:layout_height="150dp"
-            android:scaleType="centerCrop"
-            android:src="@drawable/ic_launcher_background" />
-
         <TextView
-            android:id="@+id/textViewNombreProducto"
+            android:id="@+id/textViewFecha"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:text="Product Name"
-            android:textSize="16sp"
+            android:text="Fecha: 01/01/2023 12:00"
             android:textStyle="bold" />
 
         <TextView
-            android:id="@+id/textViewPrecio"
+            android:id="@+id/textViewTotal"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="4dp"
-            android:text="$0.00"
-            android:textColor="@android:color/holo_green_dark"
-            android:textSize="14sp" />
+            android:text="Total: $0.00"
+            android:textColor="@android:color/holo_green_dark" />
 
-        <Button
-            android:id="@+id/buttonAddToCart"
+        <TextView
+            android:id="@+id/textViewEstado"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:text="Add to Cart" />
+            android:layout_marginTop="4dp"
+            android:text="Estado: Pendiente" />
 
     </LinearLayout>
 </androidx.cardview.widget.CardView>

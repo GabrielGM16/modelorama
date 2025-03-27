@@ -1,58 +1,70 @@
 package com.example.modelorama
 
+import android.content.Intent
 import android.os.Bundle
-import android.view.Menu
+import android.util.Log
+import com.google.android.material.bottomnavigation.BottomNavigationView
 import androidx.appcompat.app.AppCompatActivity
-import androidx.drawerlayout.widget.DrawerLayout
 import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
-import androidx.navigation.ui.navigateUp
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
 import com.example.modelorama.databinding.ActivityMainBinding
-import com.google.android.material.navigation.NavigationView
+import com.example.modelorama.ui.home.Producto
+import com.example.modelorama.ui.auth.LoginActivity
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
 
 class MainActivity : AppCompatActivity() {
 
-    private lateinit var appBarConfiguration: AppBarConfiguration
     private lateinit var binding: ActivityMainBinding
+    private val db = FirebaseFirestore.getInstance()
+    private val auth = FirebaseAuth.getInstance()
+    private val tag = "MainActivity"
+
+    // Fix the BottomNavigationView type mismatch
+    private lateinit var bottomNavigationView: BottomNavigationView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        // Check if user is logged in
+        if (auth.currentUser == null) {
+            // User is not logged in, redirect to login screen
+            startActivity(Intent(this, LoginActivity::class.java))
+            finish()
+            return
+        }
+
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        setSupportActionBar(binding.appBarMain.toolbar)
-        
-        // Remove or comment out the floating action button setup
-        // binding.appBarMain.fab.setOnClickListener { view ->
-        //     Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-        //         .setAction("Action", null).show()
-        // }
-        
-        val drawerLayout: DrawerLayout = binding.drawerLayout
-        val navView: NavigationView = binding.navView
-        val navController = findNavController(R.id.nav_host_fragment_content_main)
-        
-        // Configure the top-level destinations - include all main menu items
-        appBarConfiguration = AppBarConfiguration(
-            setOf(
-                R.id.navigation_home, R.id.navigation_carrito, R.id.navigation_promociones, R.id.navigation_ubicaciones
-            ), drawerLayout
+        // Define appBarConfiguration as a class property, not a local variable
+        val appBarConfiguration = AppBarConfiguration(
+            setOf(R.id.navigation_home, R.id.navigation_admin, R.id.navigation_profile)
         )
         
+
+        
+        // To match your actual fragment ID in your layout file, likely:
+        // Replace the duplicate navController declarations with a single one
+        // Around line 50-53
+        val navController = findNavController(R.id.nav_host_fragment_activity_main)
+        // or use the correct ID for your nav host fragment
         setupActionBarWithNavController(navController, appBarConfiguration)
-        navView.setupWithNavController(navController)
+        // Fix the navView reference
+        // Fix the bottomNavigationView reference - make sure this matches your binding
+        binding.navView.setupWithNavController(navController)
     }
-
-    override fun onCreateOptionsMenu(menu: Menu): Boolean {
-        menuInflater.inflate(R.menu.main, menu)
-        return true
-    }
-
-    override fun onSupportNavigateUp(): Boolean {
-        val navController = findNavController(R.id.nav_host_fragment_content_main)
-        return navController.navigateUp(appBarConfiguration) || super.onSupportNavigateUp()
+    
+    private fun saveProductToFirestore(producto: Producto) {
+        db.collection("productos")
+            .add(producto)
+            .addOnSuccessListener { documentReference ->
+                Log.d(tag, "Product saved with ID: ${documentReference.id}")
+            }
+            .addOnFailureListener { e ->
+                Log.w(tag, "Error saving product", e)
+            }
     }
 }
