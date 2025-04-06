@@ -6,50 +6,49 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
-import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
-import com.example.modelorama.CartManager
 import com.example.modelorama.R
-import com.example.modelorama.model.Producto
+import com.example.modelorama.models.Product
 
-class ProductAdapter(private val products: List<Producto>) : 
-    RecyclerView.Adapter<ProductAdapter.ProductViewHolder>() {
-    
-    class ProductViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-        val productImage: ImageView = view.findViewById(R.id.productImageView)
-        val productName: TextView = view.findViewById(R.id.productNameTextView)
-        val productPrice: TextView = view.findViewById(R.id.productPriceTextView)
-        val addToCartButton: Button = view.findViewById(R.id.addToCartButton)
+class ProductAdapter(
+    private val products: List<Product>,
+    private val onItemClick: (Product) -> Unit,
+    private val onAddToCartClick: (Product) -> Unit
+) : RecyclerView.Adapter<ProductAdapter.ProductViewHolder>() {
+
+    inner class ProductViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+        // Aquí definimos correctamente las referencias a las vistas
+        val productImageView: ImageView = itemView.findViewById(R.id.imageViewProduct)
+        val productNameTextView: TextView = itemView.findViewById(R.id.textViewProductName)
+        val productPriceTextView: TextView = itemView.findViewById(R.id.textViewProductPrice)
+        val addToCartButton: Button = itemView.findViewById(R.id.buttonAddToCart)
     }
-    
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ProductViewHolder {
         val view = LayoutInflater.from(parent.context)
             .inflate(R.layout.item_product, parent, false)
         return ProductViewHolder(view)
     }
-    
+
     override fun onBindViewHolder(holder: ProductViewHolder, position: Int) {
         val product = products[position]
         
-        holder.productName.text = product.nombre
-        holder.productPrice.text = "$${String.format("%.2f", product.precio)}"
-        
-        // Load product image with Glide
+        // Cargar la imagen con Glide
         Glide.with(holder.itemView.context)
-            .load(product.imagenUrl)
+            .load(product.imageUrl)
             .placeholder(R.drawable.placeholder_image)
-            .into(holder.productImage)
+            .error(R.drawable.error_image)
+            .into(holder.productImageView)
         
-        holder.addToCartButton.setOnClickListener {
-            CartManager.addToCart(product)
-            Toast.makeText(
-                holder.itemView.context, 
-                "${product.nombre} agregado al carrito", 
-                Toast.LENGTH_SHORT
-            ).show()
-        }
+        // Establecer los textos
+        holder.productNameTextView.text = product.name
+        holder.productPriceTextView.text = "$ ${product.price}"
+        
+        // Configurar los listeners
+        holder.itemView.setOnClickListener { onItemClick(product) }
+        holder.addToCartButton.setOnClickListener { onAddToCartClick(product) }
     }
-    
-    override fun getItemCount() = products.size
+
+    override fun getItemCount(): Int = products.size
 }

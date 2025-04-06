@@ -5,20 +5,29 @@
 
     <group android:checkableBehavior="single">
         <item
-            android:id="@+id/navigation_home"
-            android:icon="@drawable/ic_home_black_24dp"
+            android:id="@+id/nav_home"
+            android:icon="@android:drawable/ic_menu_compass"
             android:title="@string/menu_home" />
         <item
-            android:id="@+id/navigation_carrito"
-            android:icon="@drawable/ic_shopping_cart_24"
+            android:id="@+id/nav_carrito"
+            android:icon="@android:drawable/ic_menu_gallery"
             android:title="@string/menu_carrito" />
         <item
-            android:id="@+id/navigation_promociones"
-            android:icon="@drawable/ic_local_offer_24"
+            android:id="@+id/nav_promociones"
+            android:icon="@android:drawable/ic_menu_slideshow"
             android:title="@string/menu_promociones" />
         <item
-            android:id="@+id/navigation_ubicaciones"
-            android:icon="@drawable/ic_location_on_24"
+            android:id="@+id/nav_ubicaciones"
+            android:icon="@android:drawable/ic_menu_mylocation"
             android:title="@string/menu_ubicaciones" />
     </group>
+
+    <item android:title="Cuenta">
+        <menu>
+            <item
+                android:id="@+id/nav_logout"
+                android:icon="@android:drawable/ic_menu_close_clear_cancel"
+                android:title="Cerrar Sesión" />
+        </menu>
+    </item>
 </menu>
