@@ -2,16 +2,17 @@ package com.example.modelorama.ui.home
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import com.example.modelorama.CartManager
 import com.example.modelorama.R
 import com.example.modelorama.databinding.ItemProductBinding
 import com.example.modelorama.model.Product
 
 class ProductAdapter(
     private val products: List<Product>,
-    private val onProductClick: (Product) -> Unit,
-    private val onAddToCartClick: (Product) -> Unit
+    private val onProductClick: (Product) -> Unit
 ) : RecyclerView.Adapter<ProductAdapter.ProductViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ProductViewHolder {
@@ -35,8 +36,6 @@ class ProductAdapter(
         fun bind(product: Product) {
             binding.textViewProductName.text = product.name
             binding.textViewProductPrice.text = "$ ${product.price}"
-            // Remove the line that references textViewProductDescription
-            // or make sure it exists in your layout
 
             // Load image with Glide
             Glide.with(binding.root.context)
@@ -47,7 +46,14 @@ class ProductAdapter(
 
             // Set click listeners
             binding.root.setOnClickListener { onProductClick(product) }
-            binding.buttonAddToCart.setOnClickListener { onAddToCartClick(product) }
+            binding.buttonAddToCart.setOnClickListener { 
+                CartManager.addProduct(product)
+                Toast.makeText(
+                    binding.root.context, 
+                    "${product.name} agregado al carrito", 
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
         }
     }
 }

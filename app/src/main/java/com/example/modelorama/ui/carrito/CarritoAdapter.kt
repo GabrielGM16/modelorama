@@ -1,4 +1,4 @@
-package com.example.modelorama.ui.carrito.adapter
+package com.example.modelorama.ui.carrito
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
@@ -34,30 +34,30 @@ class CarritoAdapter(
         fun bind(item: CarritoItem) {
             val producto = item.producto
             
-            binding.textViewProductName.text = producto.name  // Changed from nombre
-            binding.textViewProductPrice.text = "$ ${producto.price}"  // Changed from precio
+            binding.textViewProductName.text = producto.name
+            binding.textViewProductPrice.text = "$ ${producto.price}"
             binding.textViewQuantity.text = item.cantidad.toString()
             binding.textViewSubtotal.text = "$ ${item.subtotal}"
             
             // Load image with Glide
             Glide.with(binding.root.context)
-                .load(producto.imageUrl)  // Changed from imagenUrl
-                .placeholder(R.drawable.placeholder_image)  // Make sure this drawable exists
-                .error(R.drawable.error_image)  // Make sure this drawable exists
+                .load(producto.imageUrl)
+                .placeholder(R.drawable.placeholder_image)
+                .error(R.drawable.error_image)
                 .into(binding.imageViewProduct)
                 
             // Set click listeners
-            binding.buttonIncrease.setOnClickListener {  // Changed from buttonIncrement
+            binding.buttonIncrease.setOnClickListener {
                 CartManager.updateQuantity(item.id, item.cantidad + 1)
             }
             
-            binding.buttonDecrease.setOnClickListener {  // Changed from buttonDecrement
+            binding.buttonDecrease.setOnClickListener {
                 if (item.cantidad > 1) {
                     CartManager.updateQuantity(item.id, item.cantidad - 1)
                 }
             }
             
-            binding.buttonRemove.setOnClickListener {  // Changed from buttonDelete
+            binding.buttonRemove.setOnClickListener {
                 CartManager.removeProduct(item.id)
             }
         }

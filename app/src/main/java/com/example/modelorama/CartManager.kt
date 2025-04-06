@@ -1,40 +1,67 @@
 package com.example.modelorama
 
-import com.example.modelorama.model.Producto
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
+import com.example.modelorama.model.CarritoItem
+import com.example.modelorama.model.Product
 
 object CartManager {
-    private val cartItems = mutableListOf<Producto>()
+    private val _items = MutableLiveData<List<CarritoItem>>(emptyList())
+    val items: LiveData<List<CarritoItem>> = _items
     
-    fun addToCart(product: Producto) {
-        // Check if product already exists in cart
-        val existingProduct = cartItems.find { it.id == product.id }
-        if (existingProduct != null) {
-            // Increase quantity
-            existingProduct.cantidad += 1
+    private val _totalItems = MutableLiveData(0)
+    val totalItems: LiveData<Int> = _totalItems
+    
+    private val _totalPrice = MutableLiveData(0.0)
+    val totalPrice: LiveData<Double> = _totalPrice
+    
+    fun addProduct(product: Product) {
+        val currentItems = _items.value?.toMutableList() ?: mutableListOf()
+        val existingItem = currentItems.find { it.id == product.id }
+        
+        if (existingItem != null) {
+            // Si el producto ya está en el carrito, aumentamos la cantidad
+            existingItem.cantidad++
         } else {
-            // Add new product
-            cartItems.add(product)
+            // Si no, añadimos un nuevo item
+            currentItems.add(CarritoItem(product))
         }
+        
+        _items.value = currentItems
+        updateTotals()
     }
     
-    fun removeFromCart(productId: String) {
-        cartItems.removeIf { it.id == productId }
+    fun removeProduct(productId: String) {
+        val currentItems = _items.value?.toMutableList() ?: mutableListOf()
+        currentItems.removeIf { it.id == productId }
+        _items.value = currentItems
+        updateTotals()
     }
     
     fun updateQuantity(productId: String, quantity: Int) {
-        val product = cartItems.find { it.id == productId }
-        product?.cantidad = quantity
-    }
-    
-    fun getCartItems(): List<Producto> {
-        return cartItems.toList()
-    }
-    
-    fun getCartTotal(): Double {
-        return cartItems.sumOf { it.precio * it.cantidad }
+        if (quantity <= 0) {
+            removeProduct(productId)
+            return
+        }
+        
+        val currentItems = _items.value?.toMutableList() ?: mutableListOf()
+        val item = currentItems.find { it.id == productId }
+        
+        item?.let {
+            it.cantidad = quantity
+            _items.value = currentItems
+            updateTotals()
+        }
     }
     
     fun clearCart() {
-        cartItems.clear()
+        _items.value = emptyList()
+        updateTotals()
+    }
+    
+    private fun updateTotals() {
+        val items = _items.value ?: emptyList()
+        _totalItems.value = items.sumOf { it.cantidad }
+        _totalPrice.value = items.sumOf { it.subtotal }
     }
 }

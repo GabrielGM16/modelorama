@@ -1,99 +1,128 @@
 package com.example.modelorama
 
-import android.graphics.Bitmap
 import android.os.Bundle
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.example.modelorama.databinding.ActivityCheckoutBinding
-import com.example.modelorama.model.Producto
-import com.example.modelorama.utils.QRCodeGenerator
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
-import java.text.SimpleDateFormat
-import java.util.*
+import java.util.Date
 
 class CheckoutActivity : AppCompatActivity() {
-    
+
     private lateinit var binding: ActivityCheckoutBinding
-    private lateinit var auth: FirebaseAuth
     private lateinit var db: FirebaseFirestore
-    
+    private lateinit var auth: FirebaseAuth
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityCheckoutBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        
-        // Initialize Firebase
-        auth = FirebaseAuth.getInstance()
+
         db = FirebaseFirestore.getInstance()
-        
-        // Display cart total
-        val total = CartManager.getCartTotal()
-        binding.totalTextView.text = "Total: $${String.format("%.2f", total)}"
-        
-        binding.confirmButton.setOnClickListener {
-            processOrder()
+        auth = FirebaseAuth.getInstance()
+
+        setupUI()
+        loadCartSummary()
+    }
+
+    private fun setupUI() {
+        setSupportActionBar(binding.toolbar)
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        supportActionBar?.title = "Finalizar compra"
+
+        binding.toolbar.setNavigationOnClickListener {
+            // Reemplazamos onBackPressed() con el nuevo método recomendado
+            onBackPressedDispatcher.onBackPressed()
+        }
+
+        binding.buttonConfirmOrder.setOnClickListener {
+            if (validateForm()) {
+                processOrder()
+            }
         }
     }
-    
+
+    private fun loadCartSummary() {
+        val items = CartManager.items.value ?: emptyList()
+        val totalItems = items.sumOf { it.cantidad }
+        val totalPrice = items.sumOf { it.subtotal }
+
+        binding.textViewItemCount.text = "Productos: $totalItems"
+        binding.textViewSubtotal.text = "Subtotal: $ $totalPrice"
+        binding.textViewTotal.text = "Total: $ $totalPrice"
+    }
+
+    private fun validateForm(): Boolean {
+        var isValid = true
+
+        val name = binding.editTextName.text.toString().trim()
+        val address = binding.editTextAddress.text.toString().trim()
+        val phone = binding.editTextPhone.text.toString().trim()
+
+        if (name.isEmpty()) {
+            binding.editTextName.error = "Ingresa tu nombre"
+            isValid = false
+        }
+
+        if (address.isEmpty()) {
+            binding.editTextAddress.error = "Ingresa tu dirección"
+            isValid = false
+        }
+
+        if (phone.isEmpty()) {
+            binding.editTextPhone.error = "Ingresa tu teléfono"
+            isValid = false
+        }
+
+        return isValid
+    }
+
     private fun processOrder() {
-        val userId = auth.currentUser?.uid
-        if (userId == null) {
-            Toast.makeText(this, "Por favor inicie sesión para continuar", Toast.LENGTH_SHORT).show()
+        val currentUser = auth.currentUser
+        if (currentUser == null) {
+            Toast.makeText(this, "Debes iniciar sesión para realizar un pedido", Toast.LENGTH_LONG).show()
             return
         }
-        
-        // Create order object
-        val dateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault())
-        val orderDate = dateFormat.format(Date())
-        val orderId = UUID.randomUUID().toString()
-        
-        val items = CartManager.getCartItems().map {
-            hashMapOf(
-                "productId" to it.id,
-                "nombre" to it.nombre,
-                "precio" to it.precio,
-                "cantidad" to it.cantidad
+
+        binding.buttonConfirmOrder.isEnabled = false
+        binding.progressBar.visibility = android.view.View.VISIBLE
+
+        val items = CartManager.items.value ?: emptyList()
+        val orderItems = items.map {
+            mapOf(
+                "productId" to it.producto.id,
+                "name" to it.producto.name,
+                "price" to it.producto.price,
+                "quantity" to it.cantidad,
+                "subtotal" to it.subtotal
             )
         }
-        
+
         val order = hashMapOf(
-            "orderId" to orderId,
-            "userId" to userId,
-            "fecha" to orderDate,
-            "total" to CartManager.getCartTotal(),
-            "items" to items
+            "userId" to currentUser.uid,
+            "userEmail" to currentUser.email,
+            "userName" to binding.editTextName.text.toString().trim(),
+            "address" to binding.editTextAddress.text.toString().trim(),
+            "phone" to binding.editTextPhone.text.toString().trim(),
+            "items" to orderItems,
+            "totalItems" to items.sumOf { it.cantidad },
+            "totalPrice" to items.sumOf { it.subtotal },
+            "status" to "pendiente",
+            "createdAt" to Date()
         )
-        
-        // Save order to Firestore
+
         db.collection("pedidos")
-            .document(orderId)
-            .set(order)
-            .addOnSuccessListener {
-                // Generate QR code with order details
-                generateQRCode(orderId)
-                
-                // Clear cart
+            .add(order)
+            .addOnSuccessListener { documentReference ->
+                Toast.makeText(this, "¡Pedido realizado con éxito!", Toast.LENGTH_LONG).show()
                 CartManager.clearCart()
-                
-                Toast.makeText(this, "Compra realizada con éxito", Toast.LENGTH_SHORT).show()
+                finish()
             }
             .addOnFailureListener { e ->
-                Toast.makeText(this, "Error al procesar la orden: ${e.message}", 
-                    Toast.LENGTH_SHORT).show()
+                binding.buttonConfirmOrder.isEnabled = true
+                binding.progressBar.visibility = android.view.View.GONE
+                Toast.makeText(this, "Error al procesar el pedido: ${e.message}", Toast.LENGTH_LONG).show()
             }
-    }
-    
-    private fun generateQRCode(orderId: String) {
-        // Create QR code content
-        val qrContent = "OrderID: $orderId\n" +
-                "Fecha: ${SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault()).format(Date())}\n" +
-                "Total: $${String.format("%.2f", CartManager.getCartTotal())}"
-        
-        // Generate QR code bitmap using your utility class
-        val qrBitmap: Bitmap = QRCodeGenerator.generateQRCode(qrContent, 500, 500)
-        
-        // Display QR code
-        binding.qrCodeImageView.setImageBitmap(qrBitmap)
     }
 }

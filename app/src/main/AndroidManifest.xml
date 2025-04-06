@@ -36,6 +36,11 @@
             android:label="@string/app_name"
             android:theme="@style/Theme.Modelorama.NoActionBar" />
             
+        <activity
+            android:name=".CheckoutActivity"
+            android:exported="false"
+            android:theme="@style/Theme.Modelorama.NoActionBar" />
+            
         <!-- Other activities -->
         
     </application>

@@ -1,91 +1,81 @@
 package com.example.modelorama.ui.carrito
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.modelorama.CartManager
+import com.example.modelorama.CheckoutActivity
 import com.example.modelorama.databinding.FragmentCarritoBinding
 import com.example.modelorama.model.CarritoItem
-import com.example.modelorama.ui.carrito.adapter.CarritoAdapter
 
 class CarritoFragment : Fragment() {
 
     private var _binding: FragmentCarritoBinding? = null
     private val binding get() = _binding!!
-    
-    private lateinit var carritoViewModel: CarritoViewModel
-    private lateinit var carritoAdapter: CarritoAdapter
+    private lateinit var adapter: CarritoAdapter  // Changed from adapter.CarritoAdapter
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        carritoViewModel = ViewModelProvider(requireActivity())[CarritoViewModel::class.java]
-        
         _binding = FragmentCarritoBinding.inflate(inflater, container, false)
-        val root: View = binding.root
+        return binding.root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
         
         setupRecyclerView()
-        setupObservers()
-        setupButtons()
+        observeCartChanges()
         
-        return root
-    }
-    
-    private fun setupRecyclerView() {
-        carritoAdapter = CarritoAdapter(
-            onIncrement = { productoId ->
-                carritoViewModel.incrementarCantidad(productoId)
-            },
-            onDecrement = { productoId ->
-                carritoViewModel.decrementarCantidad(productoId)
-            },
-            onDelete = { productoId ->
-                carritoViewModel.eliminarItem(productoId)
-            }
-        )
-        
-        binding.recyclerViewCarrito.apply {
-            layoutManager = LinearLayoutManager(context)
-            adapter = carritoAdapter
-        }
-    }
-    
-    private fun setupObservers() {
-        carritoViewModel.items.observe(viewLifecycleOwner) { items ->
-            carritoAdapter.submitList(items)
-            updateEmptyState(items)
-        }
-        
-        carritoViewModel.total.observe(viewLifecycleOwner) { total ->
-            binding.textViewTotal.text = "Total: $${String.format("%.2f", total)}"
-        }
-    }
-    
-    private fun updateEmptyState(items: List<CarritoItem>) {
-        if (items.isEmpty()) {
-            binding.emptyStateLayout.visibility = View.VISIBLE
-            binding.recyclerViewCarrito.visibility = View.GONE
-            binding.checkoutLayout.visibility = View.GONE
-        } else {
-            binding.emptyStateLayout.visibility = View.GONE
-            binding.recyclerViewCarrito.visibility = View.VISIBLE
-            binding.checkoutLayout.visibility = View.VISIBLE
-        }
-    }
-    
-    private fun setupButtons() {
         binding.buttonCheckout.setOnClickListener {
-            // Navigate to checkout
-            // findNavController().navigate(R.id.action_carritoFragment_to_checkoutFragment)
+            if (CartManager.items.value?.isNotEmpty() == true) {
+                startActivity(Intent(requireContext(), CheckoutActivity::class.java))
+            }
         }
         
-        binding.buttonVaciarCarrito.setOnClickListener {
-            carritoViewModel.vaciarCarrito()
+        binding.buttonClearCart.setOnClickListener {
+            CartManager.clearCart()
+        }
+    }
+
+    private fun setupRecyclerView() {
+        adapter = CarritoAdapter(emptyList())  // Changed from adapter.CarritoAdapter
+        binding.recyclerViewCart.apply {
+            layoutManager = LinearLayoutManager(context)
+            adapter = this@CarritoFragment.adapter
+        }
+    }
+    
+    private fun observeCartChanges() {
+        CartManager.items.observe(viewLifecycleOwner) { items ->
+            updateUI(items)
+        }
+        
+        CartManager.totalPrice.observe(viewLifecycleOwner) { total ->
+            binding.textViewTotal.text = "Total: $ $total"
+        }
+    }
+    
+    private fun updateUI(items: List<CarritoItem>) {
+        adapter = CarritoAdapter(items)  // Changed from adapter.CarritoAdapter
+        binding.recyclerViewCart.adapter = adapter
+        
+        if (items.isEmpty()) {
+            binding.recyclerViewCart.visibility = View.GONE
+            binding.layoutEmptyCart.visibility = View.VISIBLE
+            binding.buttonCheckout.isEnabled = false
+            binding.buttonClearCart.isEnabled = false
+        } else {
+            binding.recyclerViewCart.visibility = View.VISIBLE
+            binding.layoutEmptyCart.visibility = View.GONE
+            binding.buttonCheckout.isEnabled = true
+            binding.buttonClearCart.isEnabled = true
         }
     }
 

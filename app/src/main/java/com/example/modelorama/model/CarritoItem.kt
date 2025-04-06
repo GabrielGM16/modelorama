@@ -1,11 +1,10 @@
 package com.example.modelorama.model
 
-import com.example.modelorama.model.Producto
-
 data class CarritoItem(
-    val producto: Producto,
-    var cantidad: Int = 1
+    val producto: Product,
+    var cantidad: Int = 1,
+    val id: String = producto.id
 ) {
     val subtotal: Double
-        get() = producto.precio * cantidad
+        get() = producto.price * cantidad
 }
