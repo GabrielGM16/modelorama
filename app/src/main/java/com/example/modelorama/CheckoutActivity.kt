@@ -1,6 +1,8 @@
 package com.example.modelorama
 
+import android.content.Intent
 import android.os.Bundle
+import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.example.modelorama.databinding.ActivityCheckoutBinding
@@ -86,7 +88,7 @@ class CheckoutActivity : AppCompatActivity() {
         }
 
         binding.buttonConfirmOrder.isEnabled = false
-        binding.progressBar.visibility = android.view.View.VISIBLE
+        binding.progressBar.visibility = View.VISIBLE
 
         val items = CartManager.items.value ?: emptyList()
         val orderItems = items.map {
@@ -115,13 +117,22 @@ class CheckoutActivity : AppCompatActivity() {
         db.collection("pedidos")
             .add(order)
             .addOnSuccessListener { documentReference ->
-                Toast.makeText(this, "¡Pedido realizado con éxito!", Toast.LENGTH_LONG).show()
+                // Aquí abrimos la actividad de ticket con el ID del pedido
+                val intent = Intent(this, TicketActivity::class.java)
+                intent.putExtra("ORDER_ID", documentReference.id)
+                intent.putExtra("CUSTOMER_NAME", binding.editTextName.text.toString().trim())
+                intent.putExtra("CUSTOMER_ADDRESS", binding.editTextAddress.text.toString().trim())
+                intent.putExtra("CUSTOMER_PHONE", binding.editTextPhone.text.toString().trim())
+                intent.putExtra("TOTAL_ITEMS", items.sumOf { it.cantidad })
+                intent.putExtra("TOTAL_PRICE", items.sumOf { it.subtotal })
+                
                 CartManager.clearCart()
+                startActivity(intent)
                 finish()
             }
             .addOnFailureListener { e ->
                 binding.buttonConfirmOrder.isEnabled = true
-                binding.progressBar.visibility = android.view.View.GONE
+                binding.progressBar.visibility = View.GONE
                 Toast.makeText(this, "Error al procesar el pedido: ${e.message}", Toast.LENGTH_LONG).show()
             }
     }

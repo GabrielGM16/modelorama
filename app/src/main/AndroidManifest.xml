@@ -41,7 +41,10 @@
             android:exported="false"
             android:theme="@style/Theme.Modelorama.NoActionBar" />
             
-        <!-- Other activities -->
-        
+        <activity
+            android:name=".TicketActivity"
+            android:exported="false"
+            android:theme="@style/Theme.Modelorama.NoActionBar" />
+            
     </application>
 </manifest>
